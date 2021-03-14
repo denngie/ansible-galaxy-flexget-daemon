@@ -36,10 +36,10 @@ Example Playbook
 
 ```yaml
 ---
-- name: Apply flexget-daemon role
+- name: Apply flexget_daemon role
   hosts: flexget-server
   roles:
-    - role: flexget-daemon
+    - role: denngie.flexget_daemon
       vars:
         flexget_nickname: galaxy_bot
         flexget_rsskey: abcdefghij0123456789

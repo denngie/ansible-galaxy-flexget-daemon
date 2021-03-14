@@ -121,9 +121,8 @@ templates:
       regexp: "{? video_regexp ?}"
       retrieve: files
     regexp:
-      reject:
+      accept_excluding:
         - sample
-    accept_all: yes # Needed because no other filter accepts the entry
 
   series metainfo:
     parsing:

@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: flexget_daemon
   author: Dennis Israelsson
   description: Installs flexget on your server
 

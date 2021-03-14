@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Dennis Israelsson
+  description: Installs flexget on your server
+
+  license: MIT
+
+  min_ansible_version: 2.10
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - 20.04
+
+  galaxy_tags:
+    - flexget
+
+dependencies: []

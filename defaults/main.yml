@@ -1,0 +1,8 @@
+---
+# defaults file for flexget-daemon
+content_path: /mnt/raid
+
+flexget_path: /opt/flexget
+
+trakt_hdr_list: hdr-series
+trakt_sdr_list: series

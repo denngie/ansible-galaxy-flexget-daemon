@@ -1,0 +1,6 @@
+---
+# handlers file for flexget-daemon
+- name: reload flexget daemon
+  ansible.builtin.command:
+    cmd: "{{ flexget_path }}/bin/flexget daemon reload-config"
+  changed_when: false

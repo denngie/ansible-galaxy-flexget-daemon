@@ -1,0 +1,163 @@
+variables: vars.yml
+schedules: no
+
+web_server:
+  web_ui: no
+
+irc:
+  TorrentLeech:
+    tracker_file: TorrentLeech.tracker
+    task_re:
+      - task: get series
+        patterns:
+          - regexp: "TV :: Episodes HD"
+            field: irc_category
+      - task: get movie
+        patterns:
+          - regexp: "Movies :: 4K"
+            field: irc_category
+    nickname: "{? irc.nickname ?}"
+    port: 7021
+    use_ssl: yes
+    channels: '#tlannounces'
+    task_delay: 60
+    rsskey: "{? irc.rsskey ?}"
+
+tasks:
+  get series:
+    template:
+      - get series
+      - if 4k require hdr
+
+  get movie:
+    template:
+      - movie metainfo
+      - get movie
+      - if 4k require hdr
+
+  decompress series:
+    template:
+      - global decompress
+      - series metainfo 
+      - series decompress
+
+  decompress movie:
+    template:
+      - global decompress
+      - movie metainfo 
+      - movie decompress
+
+  copy series:
+    template:
+      - global copy
+      - series metainfo 
+      - series copy
+
+  copy movie:
+    template:
+      - global copy
+      - movie metainfo 
+      - movie copy
+
+templates:
+  global:
+    manual: yes
+    no_entries_ok: yes
+
+  get series:
+    sequence:
+      - configure_series:
+          from:
+            trakt_list:
+              account: "{? trakt.account ?}"
+              list: "{? trakt.series.hdr.list ?}"
+              strip_dates: yes
+              type: shows
+          settings: "{? trakt.series.hdr.settings ?}"
+      - configure_series:
+          from:
+            trakt_list:
+              account: "{? trakt.account ?}"
+              list: "{? trakt.series.sdr.list ?}"
+              strip_dates: yes
+              type: shows
+          settings: "{? trakt.series.sdr.settings ?}"
+    qbittorrent: yes
+
+  get movie:
+    crossmatch:
+      from:
+        - trakt_list:
+            account: "{? trakt.account ?}"
+            list: "{? trakt.movie.list ?}"
+            strip_dates: yes
+            type: movies
+      fields:
+        - movie_name
+        - movie_year
+      action: accept
+    quality: "{? trakt.movie.quality ?}"
+    qbittorrent: yes
+
+  if 4k require hdr:
+    if: # Dirty workaround to get HDR
+      - "'2160p' in quality":
+          regexp:
+            reject_excluding:
+              - hdr
+
+  global decompress:
+    filesystem:
+      path: "{? path.torrent ?}"
+      recursive: yes
+      mask: '*.rar'
+      retrieve: files
+    archives: yes
+
+  global copy:
+    filesystem:
+      path: "{? path.torrent ?}"
+      recursive: yes
+      regexp: "{? video_regexp ?}"
+      retrieve: files
+    regexp:
+      reject:
+        - sample
+    accept_all: yes # Needed because no other filter accepts the entry
+
+  series metainfo:
+    parsing:
+      series: guessit
+    metainfo_series: yes
+    require_field:
+      - series_name
+      - series_season
+      - series_episode
+
+  series decompress:
+    decompress:
+      to: "{? path.series ?}"
+      keep_dirs: no
+      regexp: "{? video_regexp ?}"
+
+  series copy:
+    copy:
+      to: "{? path.series ?}"
+
+  movie metainfo:
+    parsing:
+      movie: guessit
+    metainfo_movie: yes
+    require_field:
+      - movie_name
+      - movie_year
+
+  movie decompress:
+    decompress:
+      to: "{? path.movie ?}"
+      keep_dirs: no
+      regexp: "{? video_regexp ?}"
+
+  movie copy:
+    copy:
+      to: "{? path.movie ?}"

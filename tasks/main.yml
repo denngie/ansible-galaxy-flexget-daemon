@@ -1,0 +1,104 @@
+---
+# tasks file for flexget-daemon
+- name: verify variables needed is defined
+  assert:
+    that:
+      - flexget_nickname is defined
+      - flexget_rsskey is defined
+      - trakt_account is defined
+    fail_msg: Missing either flexget_nickname, flexget_rsskey or trakt_account
+
+- name: install python3-pip, virtualenv and unrar (non-free)
+  ansible.builtin.apt:
+    name:
+      - python3-pip
+      - unrar
+      - virtualenv
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: create flexget virtualenv folder
+  ansible.builtin.file:
+    path: "{{ flexget_path }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  become: yes
+
+- name: install flexget, rarfile and irc_bot in virtualenv
+  ansible.builtin.pip:
+    name:
+      - flexget
+      - rarfile
+      - irc_bot
+    virtualenv: "{{ flexget_path }}"
+    state: present
+
+- name: create flexget config folder
+  ansible.builtin.file:
+    path: ~/.flexget
+    state: directory
+
+- name: create flexget config
+  ansible.builtin.copy:
+    src: flexget_config.yml
+    dest: ~/.flexget/config.yml
+  notify: reload flexget daemon
+
+- name: create flexget vars
+  ansible.builtin.template:
+    src: flexget_vars.yml.j2
+    dest: ~/.flexget/vars.yml
+  notify: reload flexget daemon
+
+- name: create flexget IRC trackers folder
+  ansible.builtin.file:
+    path: ~/.flexget/trackers
+    state: directory
+
+- name: download TorrentLeech IRC tracker file
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/autodl-community/autodl-trackers/master/trackers/TorrentLeech.tracker
+    dest: ~/.flexget/trackers/TorrentLeech.tracker
+    force: no
+
+- name: schedule flexget daemon to autostart via cron
+  ansible.builtin.cron:
+    name: flexget
+    job: "{{ flexget_path }}/bin/flexget daemon start -d"
+    special_time: reboot
+    state: present
+
+- name: start flexget daemon
+  ansible.builtin.command:
+    cmd: "{{ flexget_path }}/bin/flexget daemon start -d"
+  register: result
+  changed_when: "'Daemon already running' not in result.stdout"
+
+- name: get flexget API token
+  ansible.builtin.command:
+    cmd: "{{ flexget_path }}/bin/flexget web showtoken"
+  register: flexget_api_token
+  changed_when: false
+
+- name: extract flexget API token
+  set_fact:
+    flexget_api_token: "{{ flexget_api_token.stdout_lines[-1].split(' ')[-1] }}"
+
+- name: create flexget_api shell script
+  ansible.builtin.template:
+    src: flexget_api.sh.j2
+    dest: "{{ content_path }}/scripts/flexget_api.sh"
+    mode: 0755
+
+- name: get trakt auth list
+  ansible.builtin.command:
+    cmd: "{{ flexget_path }}/bin/flexget trakt list"
+  register: flexget_api_token
+  changed_when: false
+
+- name: trakt auth needed
+  fail:
+    msg: "You need to execute {{ flexget_path }}/bin/flexget trakt auth <account>"
+  when: "'No trakt authorizations stored in database.' in result.stdout"

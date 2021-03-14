@@ -4,12 +4,12 @@ galaxy_info:
 
   license: MIT
 
-  min_ansible_version: 2.10
+  min_ansible_version: "2.10"
 
   platforms:
   - name: Ubuntu
     versions:
-    - 20.04
+    - focal
 
   galaxy_tags:
     - flexget

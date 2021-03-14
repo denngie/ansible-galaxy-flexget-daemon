@@ -29,7 +29,7 @@ trakt_sdr_list: Trakt list name for SDR series
 Dependencies
 ------------
 
-Not a dependency but this role is intended to be used with my other role qbittorrent-nox
+Not a dependency but this role is intended to be used with my other role denngie.qbittorrent_nox
 
 Example Playbook
 ----------------

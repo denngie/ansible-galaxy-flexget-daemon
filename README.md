@@ -1,7 +1,7 @@
 flexget_daemon
 =========
 
-Installs flexget on your server in daemon mode, using IRC as input with a tracker included as an example.
+Installs flexget on your Ubuntu server in daemon mode, using IRC as input with a tracker included as an example.
 
 Requirements
 ------------

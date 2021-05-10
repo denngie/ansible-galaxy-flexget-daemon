@@ -95,6 +95,7 @@ templates:
       fields:
         - movie_name
         - movie_year
+      all_fields: yes
       action: accept
     quality: "{? trakt.movie.quality ?}"
     qbittorrent: yes

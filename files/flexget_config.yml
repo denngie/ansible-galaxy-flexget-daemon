@@ -27,13 +27,11 @@ tasks:
   get series:
     template:
       - get series
-      - if 4k require hdr
 
   get movie:
     template:
       - movie metainfo
       - get movie
-      - if 4k require hdr
 
   decompress series:
     template:
@@ -99,13 +97,6 @@ templates:
       action: accept
     quality: "{? trakt.movie.quality ?}"
     qbittorrent: yes
-
-  if 4k require hdr:
-    if: # Dirty workaround to get HDR
-      - "'2160p' in quality":
-          regexp:
-            reject_excluding:
-              - hdr
 
   global decompress:
     filesystem:

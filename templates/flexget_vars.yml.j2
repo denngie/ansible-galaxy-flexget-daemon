@@ -9,16 +9,16 @@ trakt:
       list: {{ trakt_hdr_list }}
       settings:
         propers: 24 hours
-        quality: 2160p h265+
+        quality: 2160p h265 hdr+
     sdr:
       list: {{ trakt_sdr_list }}
       settings:
         propers: 24 hours
         timeframe: 48 hours
-        target: 1080p h265+
+        target: 1080p+ h265
         quality: 1080p h264+
   movie:
-    quality: 2160p h265+ dtshd+
+    quality: 2160p h265 hdr+ dtshd+
     list: watchlist
 
 path:

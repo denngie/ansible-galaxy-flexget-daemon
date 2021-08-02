@@ -22,8 +22,8 @@ trakt:
     list: watchlist
 
 path:
-  series: '{{ content_path }}/media/TV/{% raw %}{{ series_name }}/Season {{ series_season }}{% endraw %}/'
-  movie: '{{ content_path }}/media/Film/{% raw %}{{ movie_name }} ({{movie_year }}{% endraw %})/'
+  series: '{{ content_path }}/TV/{% raw %}{{ series_name | replace(" ", ".") }}/{{ series_season | pad(2) }}{% endraw %}/'
+  movie: '{{ content_path }}/Film/{% raw %}{{ title }}{% endraw %}/'
   torrent: '{{ content_path }}/torrent/done'
 
 video_regexp: '^.*\.(?:mkv|mp4)$'

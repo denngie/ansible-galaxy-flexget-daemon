@@ -1,6 +1,6 @@
 ---
 # defaults file for flexget-daemon
-content_path: /mnt/raid
+content_path: /mnt/raid/media
 
 flexget_path: /opt/flexget
 

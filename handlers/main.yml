@@ -4,3 +4,8 @@
   ansible.builtin.command:
     cmd: "{{ flexget_path }}/bin/flexget daemon reload-config"
   changed_when: false
+
+- name: reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  become: yes

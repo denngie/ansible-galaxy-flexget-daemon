@@ -1,0 +1,16 @@
+[Unit]
+Description=Flexget Daemon
+After=network.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+Group={{ ansible_user }}
+UMask=000
+WorkingDirectory={{ ansible_env.HOME }}
+ExecStart=/opt/flexget/bin/flexget daemon start
+ExecStop=/opt/flexget/bin/flexget daemon stop
+ExecReload=/opt/flexget/bin/flexget daemon reload-config
+
+[Install]
+WantedBy=multi-user.target

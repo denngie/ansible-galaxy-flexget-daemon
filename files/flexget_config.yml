@@ -36,25 +36,27 @@ tasks:
   decompress series:
     template:
       - global decompress
-      - series metainfo 
+      - series metainfo
       - series decompress
 
   decompress movie:
     template:
       - global decompress
-      - movie metainfo 
+      - movie metainfo
+      - movie trakt removal
       - movie decompress
 
   copy series:
     template:
       - global copy
-      - series metainfo 
+      - series metainfo
       - series copy
 
   copy movie:
     template:
       - global copy
-      - movie metainfo 
+      - movie metainfo
+      - movie trakt removal
       - movie copy
 
 templates:
@@ -88,12 +90,9 @@ templates:
         - trakt_list:
             account: "{? trakt.account ?}"
             list: "{? trakt.movie.list ?}"
-            strip_dates: yes
             type: movies
       fields:
-        - movie_name
-        - movie_year
-      all_fields: yes
+        - trakt_movie_id
       action: accept
     quality: "{? trakt.movie.quality ?}"
     qbittorrent: yes
@@ -138,10 +137,17 @@ templates:
   movie metainfo:
     parsing:
       movie: guessit
-    metainfo_movie: yes
-    require_field:
-      - movie_name
-      - movie_year
+    trakt_lookup:
+      account: "{? trakt.account ?}"
+    require_field: trakt_movie_id
+
+  movie trakt removal:
+    trakt_lookup: yes
+    list_remove:
+      - trakt_list:
+          account: "{? trakt.account ?}"
+          list: "{? trakt.movie.list ?}"
+          type: movies
 
   movie decompress:
     decompress:

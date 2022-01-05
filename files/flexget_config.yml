@@ -14,7 +14,7 @@ irc:
             field: irc_category
       - task: get movie
         patterns:
-          - regexp: "Movies :: 4K"
+          - regexp: "{? irc.movie_category ?}"
             field: irc_category
     nickname: "{? irc.nickname ?}"
     port: 7021

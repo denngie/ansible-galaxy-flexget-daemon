@@ -142,7 +142,8 @@ templates:
     require_field: trakt_movie_id
 
   movie trakt removal:
-    trakt_lookup: yes
+    trakt_lookup:
+      account: "{? trakt.account ?}"
     list_remove:
       - trakt_list:
           account: "{? trakt.account ?}"

@@ -59,6 +59,14 @@ tasks:
       - movie trakt removal
       - movie copy
 
+  new SDR series:
+    template:
+      - new SDR series
+
+  new HDR series:
+    template:
+      - new HDR series
+
 templates:
   global:
     manual: yes
@@ -159,3 +167,41 @@ templates:
   movie copy:
     copy:
       to: "{? path.movie ?}"
+
+  new SDR series:
+    seen: local
+    trakt_list:
+      account: "{? trakt.account ?}"
+      list: "{? trakt.series.sdr.list ?}"
+      type: episodes
+    accept_all: yes
+    set_series_begin: yes
+    list_remove:
+      - trakt_list:
+          account: "{? trakt.account ?}"
+          list: "{? trakt.series.sdr.list ?}"
+          type: episodes
+    list_add:
+      - trakt_list:
+          account: "{? trakt.account ?}"
+          list: "{? trakt.series.sdr.list ?}"
+          type: shows
+
+  new HDR series:
+    seen: local
+    trakt_list:
+      account: "{? trakt.account ?}"
+      list: "{? trakt.series.hdr.list ?}"
+      type: episodes
+    accept_all: yes
+    set_series_begin: yes
+    list_remove:
+      - trakt_list:
+          account: "{? trakt.account ?}"
+          list: "{? trakt.series.hdr.list ?}"
+          type: episodes
+    list_add:
+      - trakt_list:
+          account: "{? trakt.account ?}"
+          list: "{? trakt.series.hdr.list ?}"
+          type: shows

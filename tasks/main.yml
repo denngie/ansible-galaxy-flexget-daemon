@@ -15,8 +15,8 @@
       - unrar
       - virtualenv
     state: present
-    update_cache: yes
-  become: yes
+    update_cache: true
+  become: true
 
 - name: create flexget virtualenv folder
   ansible.builtin.file:
@@ -24,7 +24,7 @@
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  become: yes
+  become: true
 
 - name: install flexget, rarfile and irc_bot in virtualenv
   ansible.builtin.pip:
@@ -70,7 +70,7 @@
     owner: root
     group: root
     mode: 0600
-  become: yes
+  become: true
   notify: reload systemd daemon
 
 - meta: flush_handlers
@@ -78,9 +78,9 @@
 - name: enable flexget service
   ansible.builtin.systemd:
     name: flexget
-    enabled: yes
+    enabled: true
     state: started
-  become: yes
+  become: true
 
 - name: get flexget API token
   ansible.builtin.command:

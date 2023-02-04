@@ -7,5 +7,5 @@
 
 - name: reload systemd daemon
   ansible.builtin.systemd:
-    daemon_reload: yes
-  become: yes
+    daemon_reload: true
+  become: true

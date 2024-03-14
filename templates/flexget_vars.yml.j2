@@ -1,18 +1,18 @@
 irc:
-  nickname: {{ flexget_nickname }}
-  rsskey: {{ flexget_rsskey }}
+  nickname: {{ flexget_daemon_irc_nickname }}
+  rsskey: {{ flexget_daemon_rsskey }}
   movie_category: "{{ flexget_movie_category }}"
 
 trakt:
-  account: {{ trakt_account }}
+  account: {{ flexget_daemon_trakt_account }}
   series:
     hdr:
-      list: {{ trakt_hdr_list }}
+      list: {{ flexget_daemon_trakt_hdr_list }}
       settings:
         propers: 24 hours
         quality: 2160p h265 hdr+
     sdr:
-      list: {{ trakt_sdr_list }}
+      list: {{ flexget_daemon_trakt_sdr_list }}
       settings:
         propers: 24 hours
         timeframe: 48 hours
@@ -23,8 +23,8 @@ trakt:
     list: watchlist
 
 path:
-  series: '{{ content_path }}/TV/{% raw %}{{ series_name | replace(" ", ".") }}/{{ series_season | pad(2) }}{% endraw %}/'
-  movie: '{{ content_path }}/Film/{% raw %}{{ title }}{% endraw %}/'
-  torrent: '{{ content_path }}/torrent/done'
+  series: '{{ flexget_daemon_content_path }}/TV/{% raw %}{{ series_name | replace(" ", ".") }}/{{ series_season | pad(2) }}{% endraw %}/'
+  movie: '{{ flexget_daemon_content_path }}/Film/{% raw %}{{ title }}{% endraw %}/'
+  torrent: '{{ flexget_daemon_content_path }}/torrent/done'
 
 video_regexp: '^.*\.(?:mkv|mp4)$'

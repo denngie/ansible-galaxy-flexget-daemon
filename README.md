@@ -13,17 +13,17 @@ Role Variables
 
 Mandatory variables:
 ```yaml
-flexget_nickname: The IRC nickname you want
-flexget_rsskey: Your RSS key on the tracker
-trakt_account: Your trakt account name
+flexget_daemon_irc_nickname: The IRC nickname you want
+flexget_daemon_rsskey: Your RSS key on the tracker
+flexget_daemon_trakt_account: Your trakt account name
 ```
 
 Default variables:
 ```yaml
-content_path: Base path for your torrents, media files and scripts
-flexget_path: Flexget virtualenv installation path
-trakt_hdr_list: Trakt list name for HDR series
-trakt_sdr_list: Trakt list name for SDR series
+flexget_daemon_content_path: Base path for your torrents, media files and scripts
+flexget_daemon_venv_path: Flexget virtualenv installation path
+flexget_daemon_trakt_hdr_list: Trakt list name for HDR series
+flexget_daemon_trakt_sdr_list: Trakt list name for SDR series
 ```
 
 Dependencies
@@ -41,9 +41,9 @@ Example Playbook
   roles:
     - role: denngie.flexget_daemon
       vars:
-        flexget_nickname: galaxy_bot
-        flexget_rsskey: abcdefghij0123456789
-        trakt_account: galaxy_trakt
+        flexget_daemon_irc_nickname: galaxy_bot
+        flexget_daemon_rsskey: abcdefghij0123456789
+        flexget_daemon_trakt_account: galaxy_trakt
 ```
 
 License

@@ -3,10 +3,10 @@
 - name: verify variables needed is defined
   assert:
     that:
-      - flexget_nickname is defined
-      - flexget_rsskey is defined
-      - trakt_account is defined
-    fail_msg: Missing either flexget_nickname, flexget_rsskey or trakt_account
+      - flexget_daemon_irc_nickname is defined
+      - flexget_daemon_rsskey is defined
+      - flexget_daemon_trakt_account is defined
+    fail_msg: Missing either flexget_daemon_irc_nickname, flexget_daemon_rsskey or flexget_daemon_trakt_account
 
 - name: install python3-pip, virtualenv and unrar (non-free)
   ansible.builtin.apt:
@@ -20,7 +20,7 @@
 
 - name: create flexget virtualenv folder
   ansible.builtin.file:
-    path: "{{ flexget_path }}"
+    path: "{{ flexget_daemon_venv_path }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -32,7 +32,7 @@
       - flexget
       - rarfile
       - irc_bot
-    virtualenv: "{{ flexget_path }}"
+    virtualenv: "{{ flexget_daemon_venv_path }}"
     state: present
 
 - name: create flexget config folder
@@ -84,7 +84,7 @@
 
 - name: get flexget API token
   ansible.builtin.command:
-    cmd: "{{ flexget_path }}/bin/flexget web showtoken"
+    cmd: "{{ flexget_daemon_venv_path }}/bin/flexget web showtoken"
   register: flexget_api_token
   changed_when: false
 
@@ -95,16 +95,16 @@
 - name: create flexget_api shell script
   ansible.builtin.template:
     src: flexget_api.sh.j2
-    dest: "{{ content_path }}/scripts/flexget_api.sh"
+    dest: "{{ flexget_daemon_content_path }}/scripts/flexget_api.sh"
     mode: 0755
 
 - name: get trakt auth list
   ansible.builtin.command:
-    cmd: "{{ flexget_path }}/bin/flexget trakt list"
+    cmd: "{{ flexget_daemon_venv_path }}/bin/flexget trakt list"
   register: flexget_trakt
   changed_when: false
 
 - name: trakt auth needed
   fail:
-    msg: "You need to execute {{ flexget_path }}/bin/flexget trakt auth {{ trakt_account }}"
+    msg: "You need to execute {{ flexget_daemon_venv_path }}/bin/flexget trakt auth {{ flexget_daemon_trakt_account }}"
   when: "'No trakt authorizations stored in database.' in flexget_trakt.stdout"

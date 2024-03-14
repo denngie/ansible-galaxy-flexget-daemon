@@ -12,8 +12,8 @@
   ansible.builtin.apt:
     name:
       - python3-pip
+      - python3-venv
       - unrar
-      - virtualenv
     state: present
     update_cache: true
   become: true
@@ -101,10 +101,10 @@
 - name: get trakt auth list
   ansible.builtin.command:
     cmd: "{{ flexget_path }}/bin/flexget trakt list"
-  register: flexget_api_token
+  register: flexget_trakt
   changed_when: false
 
 - name: trakt auth needed
   fail:
-    msg: "You need to execute {{ flexget_path }}/bin/flexget trakt auth <account>"
-  when: "'No trakt authorizations stored in database.' in result.stdout"
+    msg: "You need to execute {{ flexget_path }}/bin/flexget trakt auth {{ trakt_account }}"
+  when: "'No trakt authorizations stored in database.' in flexget_trakt.stdout"

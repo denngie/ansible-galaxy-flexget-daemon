@@ -1,8 +1,8 @@
 variables: vars.yml
-schedules: no
+schedules: false
 
 web_server:
-  web_ui: no
+  web_ui: false
 
 irc:
   TorrentLeech:
@@ -18,7 +18,7 @@ irc:
             field: irc_category
     nickname: "{? irc.nickname ?}"
     port: 7021
-    use_ssl: yes
+    use_ssl: true
     channels: '#tlannounces'
     task_delay: 60
     rsskey: "{? irc.rsskey ?}"
@@ -69,8 +69,8 @@ tasks:
 
 templates:
   global:
-    manual: yes
-    no_entries_ok: yes
+    manual: true
+    no_entries_ok: true
 
   get series:
     sequence:
@@ -79,7 +79,7 @@ templates:
             trakt_list:
               account: "{? trakt.account ?}"
               list: "{? trakt.series.hdr.list ?}"
-              strip_dates: yes
+              strip_dates: true
               type: shows
           settings: "{? trakt.series.hdr.settings ?}"
       - configure_series:
@@ -87,10 +87,10 @@ templates:
             trakt_list:
               account: "{? trakt.account ?}"
               list: "{? trakt.series.sdr.list ?}"
-              strip_dates: yes
+              strip_dates: true
               type: shows
           settings: "{? trakt.series.sdr.settings ?}"
-    qbittorrent: yes
+    qbittorrent: true
 
   get movie:
     crossmatch:
@@ -103,20 +103,20 @@ templates:
         - trakt_movie_id
       action: accept
     quality: "{? trakt.movie.quality ?}"
-    qbittorrent: yes
+    qbittorrent: true
 
   global decompress:
     filesystem:
       path: "{? path.torrent ?}"
-      recursive: yes
+      recursive: true
       mask: '*.rar'
       retrieve: files
-    archives: yes
+    archives: true
 
   global copy:
     filesystem:
       path: "{? path.torrent ?}"
-      recursive: yes
+      recursive: true
       regexp: "{? video_regexp ?}"
       retrieve: files
     regexp:
@@ -126,7 +126,7 @@ templates:
   series metainfo:
     parsing:
       series: guessit
-    metainfo_series: yes
+    metainfo_series: true
     require_field:
       - series_name
       - series_season
@@ -135,7 +135,7 @@ templates:
   series decompress:
     decompress:
       to: "{? path.series ?}"
-      keep_dirs: no
+      keep_dirs: false
       regexp: "{? video_regexp ?}"
 
   series copy:
@@ -161,7 +161,7 @@ templates:
   movie decompress:
     decompress:
       to: "{? path.movie ?}"
-      keep_dirs: no
+      keep_dirs: false
       regexp: "{? video_regexp ?}"
 
   movie copy:
@@ -174,8 +174,8 @@ templates:
       account: "{? trakt.account ?}"
       list: "{? trakt.series.sdr.list ?}"
       type: episodes
-    accept_all: yes
-    set_series_begin: yes
+    accept_all: true
+    set_series_begin: true
     list_remove:
       - trakt_list:
           account: "{? trakt.account ?}"
@@ -193,8 +193,8 @@ templates:
       account: "{? trakt.account ?}"
       list: "{? trakt.series.hdr.list ?}"
       type: episodes
-    accept_all: yes
-    set_series_begin: yes
+    accept_all: true
+    set_series_begin: true
     list_remove:
       - trakt_list:
           account: "{? trakt.account ?}"

@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: localhost # noqa: name[play]
   remote_user: root
   roles:
-    - flexget-daemon
+    - denngie.flexget_daemon

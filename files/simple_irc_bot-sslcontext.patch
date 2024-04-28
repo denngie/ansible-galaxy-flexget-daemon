@@ -1,0 +1,12 @@
+--- simple_irc_bot.py   2024-04-27 09:57:24.322403057 +0000
++++ simple_irc_bot.py   2024-04-27 09:56:48.632902224 +0000
+@@ -395,7 +395,8 @@
+         if self.use_ssl:
+             try:
+                 self.socket.setblocking(True)
+-                self.socket = ssl.wrap_socket(self.socket)
++                self.socket_context = ssl.SSLContext()
++                self.socket = self.socket_context.wrap_socket(self.socket)
+             except (ssl.SSLWantReadError, ssl.SSLWantWriteError) as e:
+                 log.debug(e)
+                 self._handshake()

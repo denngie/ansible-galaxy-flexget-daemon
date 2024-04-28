@@ -1,8 +1,11 @@
 ---
 # defaults file for flexget-daemon
-flexget_daemon_content_path: /mnt/raid/media
+flexget_daemon_content_path: /raid/media
+flexget_daemon_torrent_path: /mnt/torrent
 
 flexget_daemon_venv_path: /opt/flexget
 
 flexget_daemon_trakt_hdr_list: hdr-series
 flexget_daemon_trakt_sdr_list: series
+
+flexget_daemon_movie_category: "Movies :: 4K"

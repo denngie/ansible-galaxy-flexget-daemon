@@ -1,14 +1,30 @@
 ---
 # tasks file for flexget-daemon
-- name: verify variables needed is defined
-  assert:
+- name: Verify variables needed is defined
+  ansible.builtin.assert:
     that:
       - flexget_daemon_irc_nickname is defined
       - flexget_daemon_rsskey is defined
       - flexget_daemon_trakt_account is defined
     fail_msg: Missing either flexget_daemon_irc_nickname, flexget_daemon_rsskey or flexget_daemon_trakt_account
 
-- name: install python3-pip, virtualenv and unrar (non-free)
+- name: Verify directories needed exists
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: dirs
+  loop:
+    - "{{ flexget_daemon_content_path }}/Film"
+    - "{{ flexget_daemon_content_path }}/TV"
+    - "{{ flexget_daemon_torrent_path }}/done"
+    - "{{ flexget_daemon_torrent_path }}/temp"
+
+- name: Verify directories needed exists
+  ansible.builtin.fail:
+    msg: "{{ item.item }} does not exist"
+  when: not item.stat.exists and not (item.stat.isdir | default(false))
+  loop: "{{ dirs.results }}"
+
+- name: Install python3-pip, virtualenv and unrar (non-free)
   ansible.builtin.apt:
     name:
       - python3-pip
@@ -18,93 +34,115 @@
     update_cache: true
   become: true
 
-- name: create flexget virtualenv folder
+- name: Create flexget virtualenv folder
   ansible.builtin.file:
     path: "{{ flexget_daemon_venv_path }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+    mode: "0775"
   become: true
 
-- name: install flexget, rarfile and irc_bot in virtualenv
+- name: Install flexget, rarfile and irc_bot in virtualenv
   ansible.builtin.pip:
     name:
       - flexget
       - rarfile
       - irc_bot
     virtualenv: "{{ flexget_daemon_venv_path }}"
+    virtualenv_command: /usr/bin/python3 -m venv
     state: present
 
-- name: create flexget config folder
+- name: Python 3.12+ workarounds
+  when: "'3.12' in ansible_python_version"
+  block:
+    - name: Install pyasynchat in virtualenv
+      ansible.builtin.pip:
+        name: pyasynchat
+        virtualenv: "{{ flexget_daemon_venv_path }}"
+        state: present
+
+    - name: Update SSL Context line in irc_bot
+      ansible.posix.patch:
+        src: simple_irc_bot-sslcontext.patch
+        dest: /opt/flexget/lib/python3.12/site-packages/irc_bot/simple_irc_bot.py
+
+- name: Create flexget config folder
   ansible.builtin.file:
     path: ~/.flexget
     state: directory
+    mode: "0775"
 
-- name: create flexget config
+- name: Create flexget config
   ansible.builtin.copy:
     src: flexget_config.yml
     dest: ~/.flexget/config.yml
-  notify: reload flexget daemon
+    mode: "0664"
+  notify: Reload flexget daemon
 
-- name: create flexget vars
+- name: Create flexget vars
   ansible.builtin.template:
     src: flexget_vars.yml.j2
     dest: ~/.flexget/vars.yml
-  notify: reload flexget daemon
+    mode: "0664"
+  notify: Reload flexget daemon
 
-- name: create flexget IRC trackers folder
+- name: Create flexget IRC trackers folder
   ansible.builtin.file:
     path: ~/.flexget/trackers
     state: directory
+    mode: "0775"
 
-- name: download TorrentLeech IRC tracker file
+- name: Download TorrentLeech IRC tracker file
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/autodl-community/autodl-trackers/master/trackers/TorrentLeech.tracker
     dest: ~/.flexget/trackers/TorrentLeech.tracker
-    force: no
+    mode: "0664"
+    force: false
 
-- name: create flexget service file
-  ansible.builtin.template:
-    src: flexget.service.j2
-    dest: /etc/systemd/system/flexget.service
-    owner: root
-    group: root
-    mode: 0600
-  become: true
-  notify: reload systemd daemon
-
-- meta: flush_handlers
-
-- name: enable flexget service
-  ansible.builtin.systemd:
-    name: flexget
-    enabled: true
-    state: started
-  become: true
-
-- name: get flexget API token
+- name: Get flexget API token
   ansible.builtin.command:
     cmd: "{{ flexget_daemon_venv_path }}/bin/flexget web showtoken"
   register: flexget_api_token
   changed_when: false
 
-- name: extract flexget API token
-  set_fact:
+- name: Extract flexget API token
+  ansible.builtin.set_fact:
     flexget_api_token: "{{ flexget_api_token.stdout_lines[-1].split(' ')[-1] }}"
 
-- name: create flexget_api shell script
+- name: Create flexget_api shell script
   ansible.builtin.template:
     src: flexget_api.sh.j2
-    dest: "{{ flexget_daemon_content_path }}/scripts/flexget_api.sh"
-    mode: 0755
+    dest: "{{ flexget_daemon_torrent_path }}/flexget_api.sh"
+    mode: "0775"
 
-- name: get trakt auth list
+- name: Get trakt auth list
   ansible.builtin.command:
     cmd: "{{ flexget_daemon_venv_path }}/bin/flexget trakt list"
   register: flexget_trakt
   changed_when: false
 
-- name: trakt auth needed
-  fail:
+- name: Trakt auth needed
+  ansible.builtin.fail:
     msg: "You need to execute {{ flexget_daemon_venv_path }}/bin/flexget trakt auth {{ flexget_daemon_trakt_account }}"
   when: "'No trakt authorizations stored in database.' in flexget_trakt.stdout"
+
+- name: Create flexget service file
+  ansible.builtin.template:
+    src: flexget.service.j2
+    dest: /etc/systemd/system/flexget.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd daemon
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable flexget service
+  ansible.builtin.systemd:
+    name: flexget
+    enabled: true
+    state: started
+  become: true

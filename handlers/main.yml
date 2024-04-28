@@ -1,11 +1,11 @@
 ---
 # handlers file for flexget-daemon
-- name: reload flexget daemon
+- name: Reload flexget daemon
   ansible.builtin.command:
-    cmd: "{{ flexget_path }}/bin/flexget daemon reload-config"
+    cmd: "{{ flexget_daemon_venv_path }}/bin/flexget daemon reload-config"
   changed_when: false
 
-- name: reload systemd daemon
+- name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
